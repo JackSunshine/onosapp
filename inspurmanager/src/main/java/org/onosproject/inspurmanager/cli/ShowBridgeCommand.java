@@ -20,7 +20,7 @@ import org.apache.karaf.shell.commands.Command;
 //import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.behaviour.BridgeDescription;
-import org.onosproject.ovsmanage.intf.OvsManageService;
+import org.onosproject.inspurmanager.intf.OvsManageService;
 
 import java.util.List;
 

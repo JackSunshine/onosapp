@@ -44,7 +44,7 @@ import org.onosproject.net.flow.TrafficTreatment;
 import org.onosproject.net.flowobjective.DefaultForwardingObjective;
 import org.onosproject.net.flowobjective.FlowObjectiveService;
 import org.onosproject.net.flowobjective.ForwardingObjective;
-import org.onosproject.ovsmanage.intf.OvsManageService;
+import org.onosproject.inspurmanager.intf.InspurOvsManageService;
 import org.onosproject.store.serializers.KryoNamespaces;
 import org.onosproject.store.service.AtomicCounter;
 import org.onosproject.store.service.DistributedSet;
@@ -83,7 +83,7 @@ public class InspurOvsManager implements InspurOvsManageService {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     private StorageService storageService;
 
-    
+
 
     private static final int BOTH_TABLE_PRIORITY = 60000;
     private static final int ONE_TABLE_PRIORITY = 65535;
@@ -111,7 +111,7 @@ public class InspurOvsManager implements InspurOvsManageService {
     protected void activate() {
         log.info("Started");
 
-        applicationId = coreService.registerApplication("org.onosproject.ovsmanager");
+        applicationId = coreService.registerApplication("org.onosproject.inspurmanager");
 
 
         Serializer serializer = Serializer.using(
@@ -124,21 +124,21 @@ public class InspurOvsManager implements InspurOvsManageService {
         brNameSet = storageService
                 .<String>setBuilder()
                 .withSerializer(serializer)
-                .withName("OVS Manager Bridge Name Set")
+                .withName("Inspur OVS Manager Bridge Name Set")
                 .withApplicationId(applicationId)
                 .build()
                 .asDistributedSet();
 
         brCoreNumber = storageService
                 .atomicCounterBuilder()
-                .withName("OVS Manager Core Bridge accumulated counter")
+                .withName("Inspur OVS Manager Core Bridge accumulated counter")
                 .withApplicationId(applicationId)
                 .build()
                 .asAtomicCounter();
 
         brAccessNumber = storageService
                 .atomicCounterBuilder()
-                .withName("OVS Manager Access Bridge accumulated counter")
+                .withName("Inspur OVS Manager Access Bridge accumulated counter")
                 .withApplicationId(applicationId)
                 .build()
                 .asAtomicCounter();

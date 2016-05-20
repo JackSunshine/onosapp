@@ -19,7 +19,7 @@ import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 //import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.cli.AbstractShellCommand;
-import org.onosproject.ovsmanage.intf.OvsManageService;
+import org.onosproject.inspurmanager.intf.OvsManageService;
 
 /**
  * CLI to create an OVS switch.
