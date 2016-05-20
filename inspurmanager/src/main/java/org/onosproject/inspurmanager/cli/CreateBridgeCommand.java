@@ -19,7 +19,7 @@ import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 //import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.cli.AbstractShellCommand;
-import org.onosproject.inspurmanager.intf.OvsManageService;
+import org.onosproject.inspurmanager.intf.InspurOvsManageService;
 
 /**
  * CLI to create an OVS switch.
@@ -45,17 +45,17 @@ public class CreateBridgeCommand extends AbstractShellCommand {
             return;
         }
 
-        OvsManageService.OvsDeviceType deviceType;
+        InspurOvsManageService.OvsDeviceType deviceType;
         if (bridgeType.toLowerCase().equals("core")) {
-            deviceType = OvsManageService.OvsDeviceType.CORE;
+            deviceType = InspurOvsManageService.OvsDeviceType.CORE;
         } else if (bridgeType.toLowerCase().equals("access")) {
-            deviceType = OvsManageService.OvsDeviceType.ACCESS;
+            deviceType = InspurOvsManageService.OvsDeviceType.ACCESS;
         } else {
             print("usage:  create-bridge bridgename 'core'/'access'");
             return;
         }
 
-        OvsManageService ovsService = AbstractShellCommand.get(OvsManageService.class);
+        InspurOvsManageService ovsService = AbstractShellCommand.get(InspurOvsManageService.class);
 
         if (ovsService.createOvs(bridgeName, deviceType)) {
             print(CREATE_BRIDGE_FORMAT, bridgeName);

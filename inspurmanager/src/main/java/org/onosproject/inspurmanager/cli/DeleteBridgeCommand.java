@@ -18,7 +18,7 @@ package org.onosproject.inspurmanager.cli;
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.onosproject.cli.AbstractShellCommand;
-import org.onosproject.inspurmanager.intf.OvsManageService;
+import org.onosproject.inspurmanager.intf.InspurOvsManageService;
 
 /**
  * CLI to delete an OVS switch.
@@ -40,7 +40,7 @@ public class DeleteBridgeCommand extends AbstractShellCommand {
             return;
         }
 
-        OvsManageService ovsService = AbstractShellCommand.get(OvsManageService.class);
+        InspurOvsManageService ovsService = AbstractShellCommand.get(InspurOvsManageService.class);
 
         if (ovsService.deleteOvs(bridgeName)) {
             print(DELETE_BRIDGE_FORMAT, bridgeName);

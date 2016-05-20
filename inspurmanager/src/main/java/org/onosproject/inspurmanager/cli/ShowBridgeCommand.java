@@ -20,7 +20,7 @@ import org.apache.karaf.shell.commands.Command;
 //import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.cli.AbstractShellCommand;
 import org.onosproject.net.behaviour.BridgeDescription;
-import org.onosproject.inspurmanager.intf.OvsManageService;
+import org.onosproject.inspurmanager.intf.InspurOvsManageService;
 
 import java.util.List;
 
@@ -40,25 +40,25 @@ public class ShowBridgeCommand extends AbstractShellCommand {
     @Override
     protected void execute() {
 
-        OvsManageService.OvsDeviceType type = null;
+        InspurOvsManageService.OvsDeviceType type = null;
 
-        OvsManageService ovsService = AbstractShellCommand.get(OvsManageService.class);
+        InspurOvsManageService ovsService = AbstractShellCommand.get(InspurOvsManageService.class);
 
         String typeStr = "All";
         if (bridgeType != null) {
             if (bridgeType.toLowerCase().equals("core")) {
-                type = OvsManageService.OvsDeviceType.CORE;
+                type = InspurOvsManageService.OvsDeviceType.CORE;
                 typeStr = "Core";
 
             } else if (bridgeType.toLowerCase().equals("access")) {
-                type = OvsManageService.OvsDeviceType.ACCESS;
+                type = InspurOvsManageService.OvsDeviceType.ACCESS;
                 typeStr = "Access";
             }
             printBridge(ovsService.getOvs(type), typeStr);
         } else {
-            printBridge(ovsService.getOvs(OvsManageService.OvsDeviceType.CORE), "Core");
+            printBridge(ovsService.getOvs(InspurOvsManageService.OvsDeviceType.CORE), "Core");
             print("\n--------------------------------------");
-            printBridge(ovsService.getOvs(OvsManageService.OvsDeviceType.ACCESS), "Access");
+            printBridge(ovsService.getOvs(InspurOvsManageService.OvsDeviceType.ACCESS), "Access");
         }
     }
 
