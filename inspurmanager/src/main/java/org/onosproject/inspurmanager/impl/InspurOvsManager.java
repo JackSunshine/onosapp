@@ -35,6 +35,7 @@ import org.onosproject.net.behaviour.BridgeName;
 import org.onosproject.net.device.DeviceEvent;
 import org.onosproject.net.device.DeviceListener;
 import org.onosproject.net.device.DeviceService;
+import org.onosproject.net.device.PortDescription;
 import org.onosproject.net.driver.DriverHandler;
 import org.onosproject.net.driver.DriverService;
 import org.onosproject.net.flow.DefaultTrafficSelector;
@@ -48,15 +49,13 @@ import org.onosproject.inspurmanager.intf.InspurOvsManageService;
 import org.onosproject.store.serializers.KryoNamespaces;
 import org.onosproject.store.service.AtomicCounter;
 import org.onosproject.store.service.DistributedSet;
+import org.onosproject.store.service.ConsistentMap;
 import org.onosproject.store.service.Serializer;
 import org.onosproject.store.service.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -99,6 +98,7 @@ public class InspurOvsManager implements InspurOvsManageService {
     private AtomicCounter brAccessNumber;
 
     private DistributedSet<String> brNameSet;
+    private ConsistentMap<String, List<String>> PortNameMap;
 
 
     private DeviceId controllerId;
@@ -128,6 +128,13 @@ public class InspurOvsManager implements InspurOvsManageService {
                 .withApplicationId(applicationId)
                 .build()
                 .asDistributedSet();
+
+        PortNameMap = storageService
+                .<String, List<String>>consistentMapBuilder()
+                .withSerializer(serializer)
+                .withName("Inspur OVS Manager Port Name Set")
+                .withApplicationId(applicationId)
+                .build();
 
         brCoreNumber = storageService
                 .atomicCounterBuilder()
@@ -167,6 +174,7 @@ public class InspurOvsManager implements InspurOvsManageService {
     protected void deactivate() {
         deviceService.removeListener(innerDeviceListener);
         brNameSet.clear();
+        PortNameMap.clear();
         brCoreNumber.set(0);
         brAccessNumber.set(0);
         log.info("Stopped");
@@ -195,6 +203,8 @@ public class InspurOvsManager implements InspurOvsManageService {
             return false;
         } else {
             brNameSet.add(deviceName);
+            List<String> list = new ArrayList<String>();
+            PortNameMap.put(deviceName, list);
         }
 
         String deviceId;
@@ -300,6 +310,121 @@ public class InspurOvsManager implements InspurOvsManageService {
         brNameSet.remove(deviceName);
 
         return true;
+    }
+
+    /**
+     * Add a port to OVS switch.
+     * @param bridgeName : Switch name.
+     * @param portName  : port name.
+     * @return
+     */
+    @Override
+    public boolean addPort(String bridgeName, String portName) {
+        if (controllerId == null) {
+            log.info("controllerId not ready!!!");
+            return false;
+        }
+
+        if (brNameSet == null) {
+            log.info("Bridge name set not ready!!!");
+            return false;
+        }
+
+        if (PortNameMap == null) {
+            log.info("Port name set not ready!!!");
+            return false;
+        }
+
+        if (!PortNameMap.containsKey(bridgeName)) {
+            log.info("Bridge name is not exist");
+            return false;
+        }
+
+        List<String> list = PortNameMap.get(bridgeName).value();
+
+        if (list.contains(portName)) {
+            log.info("port name already existed!");
+            return false;
+        }
+        else {
+            list.add(portName);
+        }
+
+        DriverHandler handler = driverService.createHandler(controllerId);
+        BridgeConfig bridgeConfig = handler.behaviour(BridgeConfig.class);
+        bridgeConfig.addPort(BridgeName.bridgeName(bridgeName), portName);
+
+        return true;
+    }
+
+    /**
+     * delete a port from OVS switch.
+     * @param bridgeName : Switch name.
+     * @param portName  : port name.
+     * @return
+     */
+    @Override
+    public boolean delPort(String bridgeName, String portName) {
+        if (controllerId == null) {
+            log.info("controllerId not ready!!!");
+            return false;
+        }
+
+        if (brNameSet == null) {
+            log.info("Bridge name set not ready!!!");
+            return false;
+        }
+
+        if (PortNameMap == null) {
+            log.info("Port name set not ready!!!");
+            return false;
+        }
+
+        if (!PortNameMap.containsKey(bridgeName)) {
+            log.info("Bridge name is not exist");
+            return false;
+        }
+
+        List<String> list = PortNameMap.get(bridgeName).value();
+
+        if (!list.contains(portName)) {
+            log.info("port name doesn't exist!");
+            return false;
+        }
+        else {
+            list.remove(portName);
+        }
+
+        DriverHandler handler = driverService.createHandler(controllerId);
+        BridgeConfig bridgeConfig = handler.behaviour(BridgeConfig.class);
+        bridgeConfig.deletePort(BridgeName.bridgeName(bridgeName), portName);
+
+        return true;
+    }
+
+    /**
+     * Get a List of the PortDescription of ports of switches connecting to ONOS.
+     * @param bridgeName : Switch type, use enum OvsDeviceType below.
+     * @return : List of the BridgeDescription, if fail or have no switch, it is emptyList.
+     */
+    @Override
+    public List<PortDescription> getPorts(String bridgeName) {
+
+        if (controllerId == null) {
+            log.info("controllerId not ready!!!");
+            return Collections.emptyList();
+        }
+
+        DriverHandler handler = driverService.createHandler(controllerId);
+        BridgeConfig bridgeConfig = handler.behaviour(BridgeConfig.class);
+        Collection<PortDescription> ports;
+        try {
+            ports = bridgeConfig.getPorts();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+
+        return Collections.emptyList();
     }
 
     /**

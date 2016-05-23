@@ -16,6 +16,7 @@
 package org.onosproject.inspurmanager.intf;
 
 import org.onosproject.net.behaviour.BridgeDescription;
+import org.onosproject.net.device.PortDescription;
 
 import java.util.List;
 
@@ -45,6 +46,28 @@ public interface InspurOvsManageService {
      * @return : List of the BridgeDescription, if fail or have no switch, it is emptyList.
      */
     List<BridgeDescription> getOvs(OvsDeviceType type);
+
+    /**
+     * add an OVS port .
+     * @param bridgeName : Switch name.
+     * @param portName   : port name
+     * @return : if delete successfully.
+     */
+    boolean addPort(String bridgeName, String portName);
+
+    /**
+     * del an OVS port .
+     * @param bridgeName : Switch name.
+     * @param portName   : port name
+     * @return : if delete successfully.
+     */
+    boolean delPort(String bridgeName, String portName);
+
+    /**
+     * Get a List of the PortDescription of OVS switches connecting to ONOS.
+     * @return : List of the BridgeDescription, if fail or have no switch, it is emptyList.
+     */
+    List<PortDescription> getPorts(String bridgeName);
 
     /**
      * Switch type, include CORE and ACCESS.
