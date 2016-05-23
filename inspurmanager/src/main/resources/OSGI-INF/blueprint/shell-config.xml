@@ -25,6 +25,15 @@
         <command>
             <action class="org.onosproject.inspurmanager.cli.ShowBridgeCommand"/>
         </command>
+        <command>
+            <action class="org.onosproject.inspurmanager.cli.AddPortCommand"/>
+        </command>
+        <command>
+            <action class="org.onosproject.inspurmanager.cli.DeletePortCommand"/>
+        </command>
+        <command>
+            <action class="org.onosproject.inspurmanager.cli.ShowPortCommand"/>
+        </command>
     </command-bundle>
 
 </blueprint>
